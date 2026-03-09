@@ -1,0 +1,20 @@
+{
+  "name": "AmeriSpeak — Learn American English",
+  "short_name": "AmeriSpeak",
+  "description": "Professional American English learning app — vocabulary, grammar, pronunciation, quizzes & real conversations",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0c0f1a",
+  "theme_color": "#0c0f1a",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Vocabulary", "url": "./index.html", "description": "Start flashcard practice" },
+    { "name": "Quick Quiz", "url": "./index.html", "description": "Take a quick quiz" }
+  ]
+}

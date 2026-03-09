@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0c0f1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AmeriSpeak">
+<link rel="manifest" href="manifest.json">
+<title>AmeriSpeak — American English</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0f1a;--bg2:#131726;--bg3:#1a2035;--bg4:#222840;--blue:#4f8ef7;--blue2:#7aabff;--blueg:rgba(79,142,247,.12);--blueb:rgba(79,142,247,.25);--cyan:#34d9c3;--cyang:rgba(52,217,195,.1);--amber:#f0a742;--amberg:rgba(240,167,66,.1);--rose:#f25f7a;--roseg:rgba(242,95,122,.1);--green:#4ade80;--greeng:rgba(74,222,128,.1);--txt:#e8ecf5;--txt2:#8b92a8;--txt3:#545c72;--txt4:#2e3347;--r:14px;--rr:20px;--rrr:28px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;min-height:100dvh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 10% 10%,rgba(79,142,247,.07) 0%,transparent 60%),radial-gradient(ellipse 60% 70% at 90% 80%,rgba(52,217,195,.05) 0%,transparent 60%)}
+.root{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100dvh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top,12px) 20px 12px;background:rgba(12,15,26,.8);backdrop-filter:blur(24px);border-bottom:1px solid rgba(79,142,247,.1);position:sticky;top:0;z-index:300;gap:12px}
+.logo{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--blue2);display:flex;align-items:center;gap:8px}
+.logo-sub{font-size:.6rem;font-family:'DM Sans',sans-serif;color:var(--txt3);display:block;letter-spacing:.12em;text-transform:uppercase}
+.xp-bar-wrap{flex:1;max-width:140px}
+.xp-label{font-size:.58rem;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;display:flex;justify-content:space-between}
+.xp-track{height:5px;background:var(--bg4);border-radius:10px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:10px;transition:width .6s cubic-bezier(.23,1,.32,1)}
+.streak-badge{display:flex;align-items:center;gap:5px;background:var(--amberg);border:1px solid rgba(240,167,66,.2);border-radius:20px;padding:4px 10px;font-size:.75rem;font-weight:600;color:var(--amber)}
+.main{flex:1;overflow-y:auto;padding:16px 16px 90px;max-width:500px;margin:0 auto;width:100%}
+.page{display:none}
+.page.on{display:block;animation:fadeUp .3s cubic-bezier(.23,1,.32,1)}
+/* HERO */
+.hero{background:var(--bg2);border:1px solid var(--blueb);border-radius:var(--rrr);padding:24px 20px;margin-bottom:16px;position:relative;overflow:hidden;animation:slideDown .4s cubic-bezier(.23,1,.32,1)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue) 30%,var(--cyan) 70%,transparent)}
+.hero-greeting{font-size:.72rem;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.hero-title{font-family:'DM Serif Display',serif;font-size:1.7rem;color:var(--txt);line-height:1.2}
+.hero-title span{color:var(--blue2);font-style:italic}
+.hero-sub{font-size:.8rem;color:var(--txt2);margin-top:8px;line-height:1.5}
+.hero-stats{display:flex;gap:12px;margin-top:16px}
+.hstat{flex:1;background:var(--bg3);border:1px solid var(--bg4);border-radius:12px;padding:10px 12px;text-align:center}
+.hstat-n{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--blue2)}
+.hstat-l{font-size:.6rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+/* SECTION HEAD */
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:12px;margin-top:4px}
+.sh-lbl{font-size:.65rem;color:var(--txt3);letter-spacing:.14em;text-transform:uppercase}
+.sh-line{flex:1;height:1px;background:rgba(79,142,247,.1)}
+/* MODULES */
+.modules{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.mod{background:var(--bg2);border:1px solid var(--bg4);border-radius:var(--rr);padding:16px 14px;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden}
+.mod:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.mod:active{transform:scale(.97)}
+.mod.blue{border-color:var(--blueb)}.mod.cyan{border-color:rgba(52,217,195,.25)}.mod.amber{border-color:rgba(240,167,66,.25)}.mod.rose{border-color:rgba(242,95,122,.25)}.mod.green{border-color:rgba(74,222,128,.25)}.mod.violet{border-color:rgba(167,139,250,.25)}
+.mod-icon{font-size:1.6rem}
+.mod-title{font-size:.85rem;font-weight:600;color:var(--txt);line-height:1.2}
+.mod-sub{font-size:.65rem;color:var(--txt3)}
+.mod-prog{height:3px;background:var(--bg4);border-radius:10px;overflow:hidden;margin-top:4px}
+.mod-prog-fill{height:100%;border-radius:10px;transition:width .6s}
+.mod.blue .mod-prog-fill{background:var(--blue)}.mod.cyan .mod-prog-fill{background:var(--cyan)}.mod.amber .mod-prog-fill{background:var(--amber)}.mod.rose .mod-prog-fill{background:var(--rose)}.mod.green .mod-prog-fill{background:var(--green)}.mod.violet .mod-prog-fill{background:#a78bfa}
+/* VOCAB */
+.vf-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.vf-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--bg4);background:var(--bg2);color:var(--txt3);font-size:.72rem;font-weight:500;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif}
+.vf-btn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.fc-wrap{perspective:1000px;margin-bottom:16px}
+.flashcard{width:100%;height:200px;background:var(--bg2);border:1px solid var(--blueb);border-radius:var(--rrr);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform .6s cubic-bezier(.23,1,.32,1);transform-style:preserve-3d;position:relative;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.flashcard.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;padding:20px;text-align:center;gap:8px;border-radius:var(--rrr)}
+.card-back{transform:rotateY(180deg);background:var(--bg3);border-radius:var(--rrr)}
+.card-ipa{font-size:.8rem;color:var(--blue2);letter-spacing:.05em}
+.card-word{font-family:'DM Serif Display',serif;font-size:2.2rem;color:var(--txt)}
+.card-type{font-size:.65rem;background:var(--blueg);color:var(--blue2);padding:2px 10px;border-radius:20px}
+.card-hint{font-size:.7rem;color:var(--txt3)}
+.card-meaning{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--cyan)}
+.card-example{font-size:.78rem;color:var(--txt2);font-style:italic;line-height:1.5}
+.card-flip-hint{font-size:.6rem;color:var(--txt3);position:absolute;bottom:14px;letter-spacing:.1em;text-transform:uppercase}
+.va-row{display:flex;gap:8px;margin-bottom:16px}
+.va-btn{flex:1;padding:11px;border-radius:12px;border:none;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.va-btn.skip{background:var(--bg3);color:var(--txt2);border:1px solid var(--bg4)}.va-btn.skip:hover{border-color:var(--rose);color:var(--rose)}
+.va-btn.know{background:var(--green);color:#0a1a0f}.va-btn.know:hover{box-shadow:0 4px 20px rgba(74,222,128,.4)}
+.va-btn.next{background:var(--blue);color:#fff}.va-btn.next:hover{box-shadow:0 4px 20px rgba(79,142,247,.4)}
+.vc-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.wl-item{background:var(--bg2);border:1px solid var(--bg4);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .18s;margin-bottom:8px}
+.wl-item:hover{border-color:var(--blueb);background:var(--blueg)}
+.wl-ico{width:36px;height:36px;border-radius:10px;background:var(--blueg);border:1px solid var(--blueb);display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.wl-info{flex:1}
+.wl-word{font-weight:600;font-size:.9rem;color:var(--txt)}
+.wl-ipa{font-size:.68rem;color:var(--blue2);margin-top:1px}
+.wl-meaning{font-size:.72rem;color:var(--txt3);margin-top:2px}
+.wl-badge{font-size:.6rem;padding:2px 8px;border-radius:20px;background:var(--greeng);color:var(--green);border:1px solid rgba(74,222,128,.2);white-space:nowrap}
+/* QUIZ */
+.q-prog-track{height:8px;background:var(--bg4);border-radius:10px;overflow:hidden;margin-bottom:6px}
+.q-prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:10px;transition:width .4s cubic-bezier(.23,1,.32,1)}
+.q-meta{display:flex;justify-content:space-between;font-size:.68rem;color:var(--txt3);margin-bottom:16px}
+.quiz-card{background:var(--bg2);border:1px solid var(--bg4);border-radius:var(--rrr);padding:24px 20px;margin-bottom:16px;position:relative;overflow:hidden}
+.q-type-badge{display:inline-flex;align-items:center;gap:5px;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:14px;background:var(--blueg);color:var(--blue2);border:1px solid var(--blueb)}
+.quiz-q{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--txt);line-height:1.4;margin-bottom:6px}
+.quiz-q-sub{font-size:.78rem;color:var(--txt2);font-style:italic}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.q-opt{padding:13px 16px;border-radius:12px;background:var(--bg3);border:1.5px solid var(--bg4);color:var(--txt);font-size:.88rem;font-weight:500;cursor:pointer;transition:all .18s;text-align:left;font-family:'DM Sans',sans-serif;width:100%;display:flex;align-items:center;gap:10px}
+.q-opt:hover:not(.answered){border-color:var(--blueb);background:var(--blueg)}
+.q-opt.correct{border-color:var(--green);background:var(--greeng);color:var(--green)}
+.q-opt.wrong{border-color:var(--rose);background:var(--roseg);color:var(--rose)}
+.opt-ltr{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--bg4);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;color:var(--txt3);background:var(--bg4)}
+.q-opt.correct .opt-ltr{background:var(--green);border-color:var(--green);color:#fff}
+.q-opt.wrong .opt-ltr{background:var(--rose);border-color:var(--rose);color:#fff}
+.q-fb{background:var(--bg3);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:none;animation:fadeUp .25s ease}
+.q-fb.show{display:block}
+.q-fb.wrong-fb{border-left:3px solid var(--rose)}.q-fb:not(.wrong-fb){border-left:3px solid var(--green)}
+.qf-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.qf-title.ok{color:var(--green)}.qf-title.no{color:var(--rose)}
+.qf-text{font-size:.82rem;color:var(--txt2);line-height:1.5}
+.qf-text strong{color:var(--txt)}
+.q-next-btn{width:100%;padding:13px;background:var(--blue);border:none;border-radius:12px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;display:none}
+.q-next-btn.show{display:block;animation:fadeUp .25s ease}
+.q-next-btn:hover{background:var(--blue2);box-shadow:0 4px 20px rgba(79,142,247,.4)}
+.quiz-finish{text-align:center;padding:30px 20px;background:var(--bg2);border:1px solid var(--bg4);border-radius:var(--rrr);display:none}
+.quiz-finish.show{display:block;animation:fadeUp .4s ease}
+.qf-emoji{font-size:3rem;margin-bottom:12px}
+.qf-score{font-family:'DM Serif Display',serif;font-size:2.5rem;color:var(--blue2)}
+.qf-sub{font-size:.8rem;color:var(--txt3);margin-top:4px}
+.retry-btn{margin-top:20px;padding:11px 28px;background:var(--blue);border:none;border-radius:12px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s}
+/* GRAMMAR */
+.g-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.g-tabs::-webkit-scrollbar{display:none}
+.gt-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--bg4);background:var(--bg2);color:var(--txt3);font-size:.72rem;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .18s;font-family:'DM Sans',sans-serif}
+.gt-btn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.rule-card{background:var(--bg2);border:1px solid var(--bg4);border-radius:var(--rr);padding:18px;margin-bottom:10px;cursor:pointer;transition:all .18s}
+.rule-card:hover{border-color:var(--blueb)}
+.rule-head{display:flex;justify-content:space-between;align-items:center}
+.rule-title{font-weight:700;font-size:.9rem;color:var(--txt)}
+.rule-toggle{color:var(--txt3);font-size:.8rem;transition:transform .2s}
+.rule-card.open .rule-toggle{transform:rotate(180deg)}
+.rule-body{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--bg4)}
+.rule-card.open .rule-body{display:block;animation:fadeUp .2s ease}
+.rule-formula{background:var(--blueg);border:1px solid var(--blueb);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:.78rem;color:var(--blue2);font-family:monospace;letter-spacing:.03em}
+.rule-desc{font-size:.8rem;color:var(--txt2);line-height:1.7;margin-bottom:12px}
+.rule-ex{background:var(--bg3);border-radius:10px;padding:10px 13px;font-size:.78rem;border-right:3px solid var(--blue);margin-bottom:6px}
+.rule-ex .en{color:var(--txt);font-weight:500}
+.rule-ex .ar{color:var(--txt3);font-size:.7rem;margin-top:3px}
+.rule-ex .notes{color:var(--amber);font-size:.68rem;margin-top:4px}
+/* PRONUNCIATION */
+.ph-hero{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--blueb);border-radius:var(--rrr);padding:24px 20px;margin-bottom:16px;text-align:center}
+.ph-title{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--blue2);margin-bottom:6px}
+.ph-sub{font-size:.75rem;color:var(--txt3)}
+.sound-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.sc{background:var(--bg2);border:1px solid var(--bg4);border-radius:14px;padding:12px 6px;text-align:center;cursor:pointer;transition:all .2s}
+.sc:hover{border-color:var(--blueb);background:var(--blueg);transform:translateY(-2px)}
+.sc:active{transform:scale(.95)}
+.sc.vowel{border-color:rgba(52,217,195,.2)}.sc.vowel:hover{border-color:var(--cyan);background:var(--cyang)}
+.sc-ipa{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--blue2)}
+.sc.vowel .sc-ipa{color:var(--cyan)}
+.sc-ex{font-size:.58rem;color:var(--txt3);margin-top:3px}
+/* PHRASES */
+.pc-row{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.pc-row::-webkit-scrollbar{display:none}
+.pc-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--bg4);background:var(--bg2);color:var(--txt3);font-size:.72rem;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .18s;font-family:'DM Sans',sans-serif}
+.pc-btn.on{background:var(--cyan);border-color:var(--cyan);color:#0a1a1a}
+.dlg-card{background:var(--bg2);border:1px solid var(--bg4);border-radius:var(--rr);padding:16px;margin-bottom:10px}
+.dlg-title{font-weight:700;font-size:.82rem;color:var(--cyan);margin-bottom:12px;display:flex;gap:8px;align-items:center}
+.dlg-scene{font-size:.68rem;color:var(--txt3);font-style:italic;margin-bottom:10px;padding:6px 10px;background:var(--bg3);border-radius:8px}
+.dl-line{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.dl-s{font-size:.65rem;font-weight:700;color:var(--txt3);white-space:nowrap;padding-top:2px;min-width:20px}
+.dl-bub{flex:1;background:var(--bg3);border-radius:12px;padding:9px 12px;border-right:2px solid var(--blue)}
+.dl-bub.b{border-right-color:var(--cyan)}
+.dl-en{font-size:.82rem;color:var(--txt);font-weight:500}
+.dl-ar{font-size:.68rem;color:var(--txt3);margin-top:3px}
+.dl-note{font-size:.65rem;color:var(--amber);margin-top:4px;font-style:italic}
+/* LESSONS */
+.lesson-item{display:flex;align-items:center;gap:14px;padding:14px 0;position:relative}
+.lesson-item+.lesson-item::before{content:'';position:absolute;top:0;right:25px;width:2px;height:14px;background:var(--bg4)}
+.lesson-bubble{width:50px;height:50px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2px solid;transition:all .2s;cursor:pointer}
+.lesson-bubble.done{background:var(--green);border-color:var(--green);box-shadow:0 4px 16px rgba(74,222,128,.3)}
+.lesson-bubble.active{background:var(--blue);border-color:var(--blue);box-shadow:0 4px 16px rgba(79,142,247,.4);animation:pulse 2s infinite}
+.lesson-bubble.locked{background:var(--bg3);border-color:var(--bg4);opacity:.5;cursor:not-allowed}
+.li-title{font-weight:600;font-size:.88rem;color:var(--txt)}
+.li-sub{font-size:.68rem;color:var(--txt3);margin-top:2px}
+.li-tags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.li-tag{font-size:.58rem;padding:1px 7px;border-radius:20px}
+.li-tag.grammar{background:var(--blueg);color:var(--blue2);border:1px solid var(--blueb)}
+.li-tag.vocab{background:var(--cyang);color:var(--cyan);border:1px solid rgba(52,217,195,.2)}
+.li-tag.speak{background:var(--amberg);color:var(--amber);border:1px solid rgba(240,167,66,.2)}
+.li-tag.listen{background:var(--roseg);color:var(--rose);border:1px solid rgba(242,95,122,.2)}
+.li-tag.business{background:var(--greeng);color:var(--green);border:1px solid rgba(74,222,128,.2)}
+.lesson-xp{font-size:.65rem;color:var(--amber);font-weight:600}
+/* PROGRESS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{background:var(--bg2);border:1px solid var(--bg4);border-radius:var(--rr);padding:16px;display:flex;flex-direction:column;gap:4px}
+.stat-icon{font-size:1.3rem;margin-bottom:4px}
+.stat-n{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--txt)}
+.stat-n span{font-family:'DM Sans',sans-serif;font-size:.75rem;color:var(--txt3)}
+.stat-l{font-size:.65rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em}
+.stat-bar{height:4px;background:var(--bg4);border-radius:10px;overflow:hidden;margin-top:8px}
+.stat-bar-fill{height:100%;border-radius:10px}
+.level-card{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--blueb);border-radius:var(--rrr);padding:20px;margin-bottom:16px;text-align:center}
+.level-badge{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;border-radius:20px;padding:6px 16px;font-size:.78rem;font-weight:700;margin-bottom:12px}
+.level-name{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--txt)}
+.level-desc{font-size:.75rem;color:var(--txt2);margin-top:6px;line-height:1.5}
+.level-xp-labels{display:flex;justify-content:space-between;font-size:.62rem;color:var(--txt3);margin-bottom:5px;margin-top:16px}
+.level-xp-track{height:8px;background:var(--bg4);border-radius:10px;overflow:hidden}
+.level-xp-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:10px}
+.ach-item{background:var(--bg2);border:1px solid var(--bg4);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.ach-item.earned{border-color:rgba(240,167,66,.3);background:var(--amberg)}
+.ach-badge{width:40px;height:40px;border-radius:12px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.ach-item.earned .ach-badge{background:var(--amberg)}
+.ach-info{flex:1}
+.ach-title{font-size:.85rem;font-weight:600;color:var(--txt)}
+.ach-desc{font-size:.68rem;color:var(--txt3);margin-top:2px}
+.ach-status{font-size:.68rem;font-weight:600}
+.ach-item.earned .ach-status{color:var(--amber)}
+.ach-item:not(.earned) .ach-status{color:var(--txt3)}
+/* BOTTOM NAV */
+.bottomnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:rgba(12,15,26,.92);backdrop-filter:blur(30px);border-top:1px solid rgba(79,142,247,.1);display:flex;padding:8px 8px env(safe-area-inset-bottom,10px);gap:2px;z-index:300}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border-radius:12px;border:none;background:none;color:var(--txt3);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.bn:hover{color:var(--txt2)}.bn.on{color:var(--blue2);background:var(--blueg)}
+.bn-icon{font-size:1.2rem;line-height:1}.bn-lbl{font-size:.55rem;letter-spacing:.03em;font-weight:500}
+/* INSTALL */
+.install-banner{background:linear-gradient(135deg,var(--blueg),rgba(52,217,195,.07));border:1px solid var(--blueb);border-radius:14px;padding:12px 16px;margin-bottom:14px;display:none;align-items:center;gap:12px}
+.install-banner.show{display:flex;animation:fadeUp .3s ease}
+.ib-text{flex:1}.ib-text strong{display:block;font-size:.82rem;color:var(--blue2)}.ib-text small{font-size:.65rem;color:var(--txt3)}
+.ib-btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.ib-close{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:.8rem}
+/* SPEAK BTN */
+.speak-btn{display:inline-flex;align-items:center;gap:6px;background:var(--amberg);border:1px solid rgba(240,167,66,.2);color:var(--amber);border-radius:20px;padding:4px 12px;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif}
+.speak-btn:hover{background:var(--amber);color:#1a0e00;box-shadow:0 4px 16px rgba(240,167,66,.3)}
+.speak-btn:active{transform:scale(.95)}
+/* TIP */
+.tip-card{background:var(--bg2);border:1px solid var(--bg4);border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:8px}
+.tip-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px}
+.tip-title{font-weight:600;font-size:.85rem;color:var(--txt);margin-bottom:3px}
+.tip-text{font-size:.75rem;color:var(--txt2);line-height:1.6}
+.tip-example{font-size:.72rem;color:var(--cyan);font-style:italic;margin-top:5px}
+/* WOTD */
+.wotd-card{background:var(--bg2);border:1px solid var(--blueb);border-radius:var(--rr);padding:18px 18px 14px;margin-bottom:16px}
+@keyframes slideDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(79,142,247,.4)}50%{box-shadow:0 0 0 8px rgba(79,142,247,0)}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:10px}
+@media(max-width:360px){.modules{grid-template-columns:1fr}.sound-grid{grid-template-columns:repeat(3,1fr)}.hero-title{font-size:1.4rem}}
+</style>
+</head>
+<body>
+<div class="root">
+<header class="topbar">
+  <div class="logo">
+    <span>🇺🇸</span>
+    <div>AmeriSpeak<span class="logo-sub">American English</span></div>
+  </div>
+  <div class="xp-bar-wrap">
+    <div class="xp-label"><span>XP</span><span>340/500</span></div>
+    <div class="xp-track"><div class="xp-fill" style="width:68%"></div></div>
+  </div>
+  <div class="streak-badge">🔥 7</div>
+</header>
+
+<main class="main">
+<div class="install-banner" id="installBanner">
+  <span style="font-size:1.4rem">📲</span>
+  <div class="ib-text"><strong>Install AmeriSpeak</strong><small>Use offline, anytime</small></div>
+  <button class="ib-btn" id="installBtn">Install</button>
+  <button class="ib-close" onclick="document.getElementById('installBanner').classList.remove('show')">✕</button>
+</div>
+
+<!-- HOME -->
+<div class="page on" id="page-home">
+  <div class="hero">
+    <div class="hero-greeting">Good day, Learner! 👋</div>
+    <div class="hero-title">Master <span>American</span><br>English Today</div>
+    <div class="hero-sub">Speak naturally, think confidently. Your daily practice keeps you on track.</div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-n">248</div><div class="hstat-l">Words</div></div>
+      <div class="hstat"><div class="hstat-n">12</div><div class="hstat-l">Lessons</div></div>
+      <div class="hstat"><div class="hstat-n">84%</div><div class="hstat-l">Accuracy</div></div>
+    </div>
+  </div>
+  <div class="sh"><span>🎯</span><span class="sh-lbl">Modules</span><div class="sh-line"></div></div>
+  <div class="modules">
+    <div class="mod blue" onclick="showPage('vocab')"><div class="mod-icon">📚</div><div class="mod-title">Vocabulary</div><div class="mod-sub">1200+ words</div><div class="mod-prog"><div class="mod-prog-fill" style="width:42%"></div></div></div>
+    <div class="mod cyan" onclick="showPage('grammar')"><div class="mod-icon">📐</div><div class="mod-title">Grammar</div><div class="mod-sub">All tenses & rules</div><div class="mod-prog"><div class="mod-prog-fill" style="width:30%"></div></div></div>
+    <div class="mod amber" onclick="showPage('pronun')"><div class="mod-icon">🎙️</div><div class="mod-title">Pronunciation</div><div class="mod-sub">IPA & phonetics</div><div class="mod-prog"><div class="mod-prog-fill" style="width:55%"></div></div></div>
+    <div class="mod rose" onclick="showPage('quiz')"><div class="mod-icon">⚡</div><div class="mod-title">Quick Quiz</div><div class="mod-sub">Test yourself</div><div class="mod-prog"><div class="mod-prog-fill" style="width:70%"></div></div></div>
+    <div class="mod green" onclick="showPage('phrases')"><div class="mod-icon">💬</div><div class="mod-title">Phrases</div><div class="mod-sub">Real conversations</div><div class="mod-prog"><div class="mod-prog-fill" style="width:25%"></div></div></div>
+    <div class="mod violet" onclick="showPage('lessons')"><div class="mod-icon">🗺️</div><div class="mod-title">Lessons</div><div class="mod-sub">Guided path</div><div class="mod-prog"><div class="mod-prog-fill" style="width:38%"></div></div></div>
+  </div>
+  <div class="sh"><span>💡</span><span class="sh-lbl">Word of the Day</span><div class="sh-line"></div></div>
+  <div class="wotd-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+      <div><div style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--txt)" id="wotd-word">—</div><div style="font-size:.72rem;color:var(--blue2);margin-top:2px" id="wotd-ipa">—</div></div>
+      <button class="speak-btn" onclick="speak(document.getElementById('wotd-word').textContent)">🔊 Listen</button>
+    </div>
+    <div style="font-size:.72rem;color:var(--txt3);margin-bottom:6px" id="wotd-type">—</div>
+    <div style="font-size:.9rem;color:var(--cyan);font-weight:500;margin-bottom:6px" id="wotd-meaning">—</div>
+    <div style="font-size:.78rem;color:var(--txt2);font-style:italic;line-height:1.5" id="wotd-ex">—</div>
+  </div>
+  <div class="sh"><span>🇺🇸</span><span class="sh-lbl">American Culture Tips</span><div class="sh-line"></div></div>
+  <div class="tip-card"><div class="tip-icon">🗣️</div><div><div class="tip-title">Contractions are totally normal!</div><div class="tip-text">Americans use contractions constantly: "I'm gonna", "wanna", "gonna", "y'all" — these are natural, not lazy speech.</div></div></div>
+  <div class="tip-card"><div class="tip-icon">👋</div><div><div class="tip-title">Small talk is key</div><div class="tip-text">"How's it going?" or "What's up?" don't need detailed answers. Just reply "Good, you?" and you're golden.</div></div></div>
+  <div class="tip-card"><div class="tip-icon">🤙</div><div><div class="tip-title">Phrasal verbs everywhere</div><div class="tip-text">Americans prefer: "figure out" not "determine", "hang out" not "socialize", "check out" not "examine".</div></div></div>
+</div>
+
+<!-- VOCAB -->
+<div class="page" id="page-vocab">
+  <div class="sh"><span>📚</span><span class="sh-lbl">Vocabulary Flashcards</span><div class="sh-line"></div></div>
+  <div class="vf-row" id="vocabFilter">
+    <button class="vf-btn on" onclick="filterVocab('all',this)">All</button>
+    <button class="vf-btn" onclick="filterVocab('basics',this)">Basics</button>
+    <button class="vf-btn" onclick="filterVocab('slang',this)">Slang</button>
+    <button class="vf-btn" onclick="filterVocab('business',this)">Business</button>
+    <button class="vf-btn" onclick="filterVocab('idioms',this)">Idioms</button>
+    <button class="vf-btn" onclick="filterVocab('phrasal',this)">Phrasal</button>
+  </div>
+  <div class="vc-meta">
+    <span style="font-size:.7rem;color:var(--txt3)" id="vcCount">Card 1/20</span>
+    <span style="font-size:.7rem;color:var(--blue2)" id="vcProg">0 learned</span>
+  </div>
+  <div class="fc-wrap">
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="card-face">
+        <div class="card-type" id="fc-type">noun</div>
+        <div class="card-word" id="fc-word">—</div>
+        <div class="card-ipa" id="fc-ipa">—</div>
+        <div class="card-hint" id="fc-hint">—</div>
+        <div class="card-flip-hint">Tap to reveal →</div>
+      </div>
+      <div class="card-face card-back">
+        <div class="card-meaning" id="fc-meaning">—</div>
+        <div style="width:100%;height:1px;background:var(--bg4);margin:4px 0"></div>
+        <div class="card-example" id="fc-example">—</div>
+        <button class="speak-btn" style="margin-top:6px" onclick="event.stopPropagation();speak(document.getElementById('fc-word').textContent)">🔊 Hear it</button>
+        <div class="card-flip-hint">← Tap to flip back</div>
+      </div>
+    </div>
+  </div>
+  <div class="va-row">
+    <button class="va-btn skip" onclick="skipCard()">✗ Skip</button>
+    <button class="va-btn know" onclick="knowCard()">✓ I Know</button>
+    <button class="va-btn next" onclick="nextCard()">Next →</button>
+  </div>
+  <div class="sh"><span>📖</span><span class="sh-lbl">Word List</span><div class="sh-line"></div></div>
+  <div id="wordList"></div>
+</div>
+
+<!-- GRAMMAR -->
+<div class="page" id="page-grammar">
+  <div class="sh"><span>📐</span><span class="sh-lbl">American Grammar</span><div class="sh-line"></div></div>
+  <div class="g-tabs" id="grammarTabs">
+    <button class="gt-btn on" onclick="switchGrammar('tenses',this)">Tenses</button>
+    <button class="gt-btn" onclick="switchGrammar('articles',this)">Articles</button>
+    <button class="gt-btn" onclick="switchGrammar('conditionals',this)">Conditionals</button>
+    <button class="gt-btn" onclick="switchGrammar('modal',this)">Modal Verbs</button>
+    <button class="gt-btn" onclick="switchGrammar('questions',this)">Questions</button>
+  </div>
+  <div id="grammarContent"></div>
+</div>
+
+<!-- PRONUNCIATION -->
+<div class="page" id="page-pronun">
+  <div class="ph-hero">
+    <div class="ph-title">🎙️ American Pronunciation</div>
+    <div class="ph-sub">Master the 44 sounds — speak like a native American</div>
+  </div>
+  <div class="sh"><span>🔤</span><span class="sh-lbl">Consonant Sounds (tap to hear)</span><div class="sh-line"></div></div>
+  <div class="sound-grid" id="consonantGrid"></div>
+  <div class="sh"><span>🎵</span><span class="sh-lbl">Vowel Sounds (tap to hear)</span><div class="sh-line"></div></div>
+  <div class="sound-grid" id="vowelGrid"></div>
+  <div class="sh"><span>💡</span><span class="sh-lbl">Pronunciation Tips</span><div class="sh-line"></div></div>
+  <div id="pronunTips"></div>
+</div>
+
+<!-- QUIZ -->
+<div class="page" id="page-quiz">
+  <div class="sh"><span>⚡</span><span class="sh-lbl">Quick Quiz</span><div class="sh-line"></div></div>
+  <div class="q-prog-track"><div class="q-prog-fill" id="qProgFill" style="width:0%"></div></div>
+  <div class="q-meta"><span id="qMeta">Q 1/10</span><span id="qScore">Score: 0</span></div>
+  <div id="quizContent">
+    <div class="quiz-card">
+      <div class="q-type-badge" id="qTypeBadge">🧠 Vocab</div>
+      <div class="quiz-q" id="quizQ">—</div>
+      <div class="quiz-q-sub" id="quizQSub"></div>
+      <div class="quiz-opts" id="quizOpts"></div>
+    </div>
+    <div class="q-fb" id="quizFb"><div class="qf-title" id="qfTitle">—</div><div class="qf-text" id="qfText">—</div></div>
+    <button class="q-next-btn" id="qNextBtn" onclick="nextQuestion()">Next Question →</button>
+  </div>
+  <div class="quiz-finish" id="quizFinish">
+    <div class="qf-emoji" id="qfEmoji">🎉</div>
+    <div class="qf-score" id="qfScore">—</div>
+    <div class="qf-sub" id="qfSub">—</div>
+    <button class="retry-btn" onclick="startQuiz()">Try Again 🔄</button>
+  </div>
+</div>
+
+<!-- PHRASES -->
+<div class="page" id="page-phrases">
+  <div class="sh"><span>💬</span><span class="sh-lbl">Real American Conversations</span><div class="sh-line"></div></div>
+  <div class="pc-row" id="phraseCats">
+    <button class="pc-btn on" onclick="switchPhrases('greetings',this)">Greetings</button>
+    <button class="pc-btn" onclick="switchPhrases('work',this)">Work</button>
+    <button class="pc-btn" onclick="switchPhrases('shopping',this)">Shopping</button>
+    <button class="pc-btn" onclick="switchPhrases('restaurant',this)">Restaurant</button>
+    <button class="pc-btn" onclick="switchPhrases('small',this)">Small Talk</button>
+    <button class="pc-btn" onclick="switchPhrases('emergency',this)">Emergency</button>
+  </div>
+  <div id="phrasesContent"></div>
+</div>
+
+<!-- LESSONS -->
+<div class="page" id="page-lessons">
+  <div class="sh"><span>🗺️</span><span class="sh-lbl">Learning Path</span><div class="sh-line"></div></div>
+  <div id="lessonPath"></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="page" id="page-progress">
+  <div class="level-card">
+    <div class="level-badge">⭐ Level 4</div>
+    <div class="level-name">Pre-Intermediate</div>
+    <div class="level-desc">Great foundation! Keep practicing to reach Intermediate and unlock advanced content.</div>
+    <div class="level-xp-labels"><span>340 XP earned</span><span>500 XP to Level 5</span></div>
+    <div class="level-xp-track"><div class="level-xp-fill" style="width:68%"></div></div>
+  </div>
+  <div class="sh"><span>📊</span><span class="sh-lbl">Your Stats</span><div class="sh-line"></div></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-n">248<span> words</span></div><div class="stat-l">Vocabulary</div><div class="stat-bar"><div class="stat-bar-fill" style="width:42%;background:var(--blue)"></div></div></div>
+    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-n">12<span> done</span></div><div class="stat-l">Lessons</div><div class="stat-bar"><div class="stat-bar-fill" style="width:38%;background:var(--cyan)"></div></div></div>
+    <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-n">84<span>%</span></div><div class="stat-l">Quiz Accuracy</div><div class="stat-bar"><div class="stat-bar-fill" style="width:84%;background:var(--green)"></div></div></div>
+    <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-n">7<span> days</span></div><div class="stat-l">Streak</div><div class="stat-bar"><div class="stat-bar-fill" style="width:70%;background:var(--amber)"></div></div></div>
+    <div class="stat-card"><div class="stat-icon">🎙️</div><div class="stat-n">55<span>%</span></div><div class="stat-l">Pronunciation</div><div class="stat-bar"><div class="stat-bar-fill" style="width:55%;background:var(--amber)"></div></div></div>
+    <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-n">14<span>h</span></div><div class="stat-l">Study Time</div><div class="stat-bar"><div class="stat-bar-fill" style="width:28%;background:#a78bfa"></div></div></div>
+  </div>
+  <div class="sh"><span>🏆</span><span class="sh-lbl">Achievements</span><div class="sh-line"></div></div>
+  <div id="achievements"></div>
+</div>
+
+</main>
+
+<nav class="bottomnav">
+  <button class="bn on" id="bn-home" onclick="showPage('home')"><span class="bn-icon">🏠</span><span class="bn-lbl">Home</span></button>
+  <button class="bn" id="bn-vocab" onclick="showPage('vocab')"><span class="bn-icon">📚</span><span class="bn-lbl">Vocab</span></button>
+  <button class="bn" id="bn-quiz" onclick="showPage('quiz')"><span class="bn-icon">⚡</span><span class="bn-lbl">Quiz</span></button>
+  <button class="bn" id="bn-phrases" onclick="showPage('phrases')"><span class="bn-icon">💬</span><span class="bn-lbl">Phrases</span></button>
+  <button class="bn" id="bn-progress" onclick="showPage('progress')"><span class="bn-icon">📊</span><span class="bn-lbl">Progress</span></button>
+</nav>
+</div>
+
+<script>
+const VOCAB=[
+  {w:"resilient",ipa:"/rɪˈzɪliənt/",type:"adjective",cat:"basics",hint:"Recovering quickly",meaning:"قادر على التعافي السريع",ex:"She's incredibly resilient — she bounced back after every setback."},
+  {w:"hustle",ipa:"/ˈhʌsəl/",type:"slang/verb",cat:"slang",hint:"Work hard fast",meaning:"يكدح / يعمل بجد ونشاط",ex:"You gotta hustle if you want to make it in this city."},
+  {w:"awkward",ipa:"/ˈɔːkwərd/",type:"adjective",cat:"basics",hint:"Uncomfortable",meaning:"محرج / غير مريح",ex:"It was super awkward when we both showed up in the same outfit."},
+  {w:"leverage",ipa:"/ˈlɛvərɪdʒ/",type:"noun/verb",cat:"business",hint:"Using advantage",meaning:"الاستفادة من الميزة / النفوذ",ex:"We can leverage our network to close this deal faster."},
+  {w:"bail out",ipa:"/beɪl aʊt/",type:"phrasal verb",cat:"phrasal",hint:"Rescue or escape",meaning:"ينقذ / يتخلى عن",ex:"He always bails out when things get tough — so unreliable!"},
+  {w:"kick the bucket",ipa:"/kɪk ðə ˈbʌkɪt/",type:"idiom",cat:"idioms",hint:"Morbid slang",meaning:"لقي حتفه / مات",ex:"The old car finally kicked the bucket after 20 years."},
+  {w:"procrastinate",ipa:"/prəˈkræstɪneɪt/",type:"verb",cat:"basics",hint:"Delay tasks",meaning:"يسوّف / يؤجل العمل",ex:"Stop procrastinating and just start writing the report!"},
+  {w:"down to earth",ipa:"/daʊn tuː ɜːrθ/",type:"idiom",cat:"idioms",hint:"Humble & real",meaning:"واقعي ومتواضع",ex:"Despite being famous, she's totally down to earth."},
+  {w:"benchmark",ipa:"/ˈbɛntʃmɑːrk/",type:"noun/verb",cat:"business",hint:"Standard reference",meaning:"المعيار / نقطة المقارنة",ex:"This sets a new benchmark for quality in our industry."},
+  {w:"chill",ipa:"/tʃɪl/",type:"slang/adj",cat:"slang",hint:"Relax / calm",meaning:"يسترخي / هادئ / لا بأس",ex:"Don't stress — just chill. Everything's gonna be fine."},
+  {w:"figure out",ipa:"/ˈfɪɡjər aʊt/",type:"phrasal verb",cat:"phrasal",hint:"Understand/solve",meaning:"يفهم / يحل مشكلة",ex:"I can't figure out why the app keeps crashing."},
+  {w:"empathy",ipa:"/ˈɛmpəθi/",type:"noun",cat:"basics",hint:"Understanding feelings",meaning:"التعاطف / مشاركة الوجدان",ex:"Good leaders show empathy toward their team members."},
+  {w:"hit the ground running",ipa:"/hɪt ðə ɡraʊnd ˈrʌnɪŋ/",type:"idiom",cat:"idioms",hint:"Start fast",meaning:"يبدأ بنشاط وحماس",ex:"She hit the ground running on her first day at the job."},
+  {w:"synergy",ipa:"/ˈsɪnərdʒi/",type:"noun",cat:"business",hint:"Combined effect",meaning:"التآزر / العمل المشترك",ex:"There's real synergy between the two teams."},
+  {w:"vibe",ipa:"/vaɪb/",type:"slang/noun",cat:"slang",hint:"Atmosphere/feel",meaning:"الأجواء / الطاقة / الإحساس",ex:"This coffee shop has such a cozy vibe!"},
+  {w:"look into",ipa:"/lʊk ˈɪntuː/",type:"phrasal verb",cat:"phrasal",hint:"Investigate",meaning:"يبحث في / يتحقق من",ex:"I'll look into the issue and get back to you tomorrow."},
+  {w:"daunting",ipa:"/ˈdɔːntɪŋ/",type:"adjective",cat:"basics",hint:"Intimidating",meaning:"مرهب / مخيف / صعب جداً",ex:"Moving to a new country can be daunting at first."},
+  {w:"burn the midnight oil",ipa:"/bɜːrn ðə ˈmɪdnaɪt ɔɪl/",type:"idiom",cat:"idioms",hint:"Work very late",meaning:"يسهر للعمل الليل كله",ex:"We burned the midnight oil to finish before the deadline."},
+  {w:"pivot",ipa:"/ˈpɪvət/",type:"verb/noun",cat:"business",hint:"Change direction",meaning:"يغير الاتجاه / نقطة تحول",ex:"The startup had to pivot completely after their product failed."},
+  {w:"lowkey",ipa:"/ˌloʊˈkiː/",type:"slang/adv",cat:"slang",hint:"Secretly/quietly",meaning:"بشكل خفي / قليلاً / في سري",ex:"I'm lowkey obsessed with this new TV show."},
+];
+
+const QUIZ_Q=[
+  {type:"vocab",q:"What does 'resilient' mean?",sub:"Choose the best definition",opts:["قادر على التعافي","خائف من التغيير","مشغول جداً","هادئ ومسترخٍ"],ans:0,explain:"'Resilient' = able to recover quickly. <strong>\"She's so resilient — nothing keeps her down.\"</strong>"},
+  {type:"grammar",q:"Which sentence is CORRECT?",sub:"",opts:["She don't know the answer.","She doesn't knows the answer.","She doesn't know the answer.","She not know the answer."],ans:2,explain:"With he/she/it, use <strong>doesn't + base verb</strong>. Never add 's' after 'doesn't'."},
+  {type:"vocab",q:"'To hustle' in American slang means…",sub:"",opts:["to steal","to work hard fast","to argue","to sleep late"],ans:1,explain:"'Hustle' = work hard and fast. <strong>\"You gotta hustle to succeed!\"</strong>"},
+  {type:"idiom",q:"'Hit the ground running' means:",sub:"",opts:["to trip and fall","to start quickly and energetically","to run a marathon","to arrive late"],ans:1,explain:"Means to begin with great energy and no delay. <strong>\"She hit the ground running on day one.\"</strong>"},
+  {type:"grammar",q:"Correct Present Perfect sentence?",sub:"",opts:["I have went to New York.","I went to New York already.","I have been to New York.","I am going to New York."],ans:2,explain:"Present Perfect = <strong>have/has + past participle</strong>. 'Been' is used for places visited."},
+  {type:"vocab",q:"'Lowkey' in American slang means…",sub:"",opts:["very loud","secretly or quietly","a type of music","being honest"],ans:1,explain:"'Lowkey' = secretly, quietly, or to a small degree. <strong>\"I'm lowkey obsessed with this show.\"</strong>"},
+  {type:"grammar",q:"Fill in: 'If I ___ rich, I would travel the world.'",sub:"Second Conditional",opts:["am","was/were","will be","had been"],ans:1,explain:"Second conditional: <strong>If + past simple (were/was)</strong>. 'Were' is formal, 'was' common in American English."},
+  {type:"phrasal",q:"'Figure out' means the same as:",sub:"",opts:["to lose track","to understand or solve","to ignore","to write down"],ans:1,explain:"'Figure out' = understand, determine, or solve. <strong>\"I finally figured it out!\"</strong>"},
+  {type:"vocab",q:"A 'daunting' task is…",sub:"",opts:["easy and fun","quick to finish","intimidating and difficult","boring"],ans:2,explain:"'Daunting' = seems very difficult or intimidating. <strong>\"The project was daunting but manageable.\"</strong>"},
+  {type:"grammar",q:"Which modal verb expresses ABILITY?",sub:"",opts:["should","must","can","might"],ans:2,explain:"<strong>'Can'</strong> = ability. Should=advice, Must=obligation, Might=possibility. <strong>\"She can speak three languages.\"</strong>"},
+];
+
+const GRAMMAR_DATA={
+  tenses:[
+    {t:"Simple Present",f:"Subject + base verb (+ s/es for he/she/it)",d:"Used for habits, facts, and routines. Very common in American English.",ex:[{e:"I drink coffee every morning.",a:"أشرب القهوة كل صباح.",n:"Habit"},{e:"She works at Google.",a:"هي تعمل في جوجل.",n:"Current state"},{e:"Water boils at 212°F.",a:"الماء يغلي عند 100°م.",n:"Fact"}]},
+    {t:"Present Progressive",f:"Subject + am/is/are + verb-ing",d:"For actions happening RIGHT NOW or temporary situations.",ex:[{e:"I'm working on a big project right now.",a:"أنا أعمل على مشروع كبير الآن.",n:"Happening now"},{e:"She's living in Austin temporarily.",a:"هي تسكن في أوستن بشكل مؤقت.",n:"Temporary"}]},
+    {t:"Simple Past",f:"Subject + past form (regular: +ed / irregular: special form)",d:"For completed actions at a specific time. Used in storytelling.",ex:[{e:"She graduated from Harvard last year.",a:"تخرجت من هارفارد السنة الماضية.",n:"Completed action"},{e:"He didn't show up to the meeting.",a:"لم يحضر إلى الاجتماع.",n:"Negative: didn't + base verb"}]},
+    {t:"Present Perfect",f:"Subject + have/has + past participle",d:"Connects past experience to the present. Common for life experiences.",ex:[{e:"I've been to 15 states so far.",a:"لقد زرت 15 ولاية حتى الآن.",n:"Life experience"},{e:"Have you ever tried brisket?",a:"هل سبق لك أن جربت البريسكيت؟",n:"Question about experience"}]},
+    {t:"Future: 'Going to' & 'Will'",f:"Going to: am/is/are + going to + verb | Will: will + verb",d:"'Going to' = planned intentions. 'Will' = spontaneous decisions or predictions.",ex:[{e:"I'm going to apply for that job tomorrow.",a:"سأتقدم لهذه الوظيفة غداً. (خطة مسبقة)",n:"Planned intention"},{e:"Hold on, I'll get the door for you.",a:"انتظر، سأفتح الباب. (قرار فوري)",n:"Spontaneous"},{e:"It's gonna rain. (gonna = going to, spoken)",a:"سيمطر.",n:"Prediction, spoken form"}]},
+  ],
+  articles:[
+    {t:"'A' vs 'An'",f:"A + consonant sound / An + vowel sound",d:"Based on PRONUNCIATION, not spelling.",ex:[{e:"a university (starts with 'yoo' sound)",a:"جامعة",n:"Consonant sound 'y'"},{e:"an hour (the 'h' is silent)",a:"ساعة",n:"Vowel sound 'ow'"},{e:"an honest person",a:"شخص أمين",n:"Silent 'h'"}]},
+    {t:"'The' — Definite Article",f:"The + specific / already known / unique",d:"Use 'the' when both parties know what's being referred to.",ex:[{e:"The president just gave a speech.",a:"الرئيس ألقى خطاباً.",n:"Unique role"},{e:"I bought a car. The car is red.",a:"اشتريت سيارة. السيارة حمراء.",n:"Second mention"},{e:"She's the best in the class.",a:"هي الأفضل في الفصل.",n:"Superlative"}]},
+    {t:"Zero Article",f:"No article with general plurals, uncountable nouns, proper nouns",d:"Don't use 'the' or 'a' — sounds unnatural to Americans.",ex:[{e:"Dogs are loyal animals.",a:"الكلاب حيوانات مخلصة.",n:"General plural — no 'the'"},{e:"I love music and coffee.",a:"أحب الموسيقى والقهوة.",n:"Uncountable general"},{e:"She studied at Harvard.",a:"درست في هارفارد.",n:"Proper noun"}]},
+  ],
+  conditionals:[
+    {t:"Zero Conditional — Facts",f:"If + present simple, present simple",d:"Always-true facts, scientific laws, habits.",ex:[{e:"If you heat water to 212°F, it boils.",a:"إذا سخنت الماء، يغلي.",n:"Scientific fact"},{e:"If it rains, I take the subway.",a:"إذا أمطرت، آخذ المترو.",n:"Habit"}]},
+    {t:"First Conditional — Real Future",f:"If + present simple, will + base verb",d:"Realistic future possibilities.",ex:[{e:"If you study hard, you'll pass the exam.",a:"إذا درست بجد، ستنجح.",n:"Realistic"},{e:"If she calls, I'll let you know.",a:"إذا اتصلت، سأخبرك.",n:"Future possibility"}]},
+    {t:"Second Conditional — Imaginary",f:"If + past simple, would + base verb",d:"Hypothetical or unlikely present/future situations.",ex:[{e:"If I were you, I'd take that job offer.",a:"لو كنت مكانك، لقبلت العرض.",n:"Advice/hypothetical"},{e:"If I had more time, I'd learn to paint.",a:"لو كان لدي وقت، لتعلمت الرسم.",n:"Unlikely wish"}]},
+    {t:"Third Conditional — Past Regrets",f:"If + past perfect, would have + past participle",d:"Imagining a different past — regrets and what-ifs.",ex:[{e:"If I had studied harder, I would have gotten an A.",a:"لو درست أكثر، لحصلت على امتياز.",n:"Past regret"},{e:"If she hadn't moved to NY, they wouldn't have met.",a:"لو لم تنتقل لنيويورك، لم يلتقيا.",n:"Changed past"}]},
+  ],
+  modal:[
+    {t:"Can / Could — Ability & Requests",f:"can/could + base verb",d:"'Can' = present ability. 'Could' = past ability or polite requests.",ex:[{e:"I can speak three languages fluently.",a:"أستطيع التحدث بثلاث لغات.",n:"Present ability"},{e:"Could you pass the salt, please?",a:"هل يمكنك تمرير الملح؟",n:"Polite request"},{e:"She could run fast as a kid.",a:"كانت تستطيع الركض سريعاً صغيرة.",n:"Past ability"}]},
+    {t:"Should — Advice",f:"should + base verb",d:"Giving advice, recommendations, or expressing expectation.",ex:[{e:"You should see a doctor about that cough.",a:"يجب أن تذهب للطبيب.",n:"Advice"},{e:"The package should arrive by Friday.",a:"يجب أن يصل الطرد بحلول الجمعة.",n:"Expectation"}]},
+    {t:"Must / Have to — Obligation",f:"must/have to + base verb",d:"'Must' = internal/personal obligation. 'Have to' = external rules.",ex:[{e:"You must be 21 to drink in the US.",a:"يجب أن تكون 21 للشرب في أمريكا.",n:"Law/rule"},{e:"I have to finish this report by 5 PM.",a:"يجب أن أنهي التقرير قبل الساعة 5.",n:"External deadline"}]},
+  ],
+  questions:[
+    {t:"Yes/No Questions",f:"Auxiliary (do/does/did/is/are/was/were) + subject + verb",d:"Invert subject and auxiliary to form yes/no questions.",ex:[{e:"Do you like American food?",a:"هل تحب الطعام الأمريكي؟",n:"Present simple"},{e:"Is she coming to the party?",a:"هل ستأتي إلى الحفلة؟",n:"Present progressive"},{e:"Did you watch the game last night?",a:"هل شاهدت المباراة الليلة الماضية؟",n:"Past simple"}]},
+    {t:"Wh- Questions",f:"Wh-word + auxiliary + subject + verb",d:"Who, what, where, when, why, how — most common in American English.",ex:[{e:"What are you doing tonight?",a:"ماذا ستفعل الليلة؟",n:"What (thing/action)"},{e:"Where did you grow up?",a:"أين نشأت؟",n:"Where (place)"},{e:"How long have you lived here?",a:"منذ متى تسكن هنا؟",n:"How long (duration)"}]},
+    {t:"Tag Questions",f:"Statement + , + reversed auxiliary + pronoun?",d:"Very common in American conversation — adds confirmation or sarcasm.",ex:[{e:"It's a beautiful day, isn't it?",a:"إنه يوم جميل، أليس كذلك؟",n:"Seeking agreement"},{e:"You've been to New York, haven't you?",a:"لقد كنت في نيويورك، أليس كذلك؟",n:"Confirmation"},{e:"That wasn't funny, was it?",a:"لم يكن مضحكاً، أليس كذلك؟",n:"Negative tag"}]},
+  ],
+};
+
+const PHRASES_DATA={
+  greetings:[
+    {title:"Casual American Greetings",scene:"Meeting friends on the street",lines:[{s:"A",en:"Hey! What's up?",ar:"هيّ! ما الأخبار؟",note:"Very casual — common among friends"},{s:"B",en:"Not much, just chilling. You?",ar:"لا شيء، فقط أسترخي.",note:"'Chilling' = relaxing"},{s:"A",en:"Same here. It's been forever! Where have you been?",ar:"نفس الشيء. مضى وقت طويل! أين كنت؟",note:"'It's been forever' = haven't seen you in ages"},{s:"B",en:"I know, right? I've been super busy with work.",ar:"أعلم أليس كذلك؟ كنت مشغولاً جداً بالعمل.",note:"'I know, right?' = strong agreement"}]},
+    {title:"Professional Greetings",scene:"Meeting colleagues at work",lines:[{s:"A",en:"Good morning! How are you doing today?",ar:"صباح الخير! كيف حالك اليوم؟",note:""},{s:"B",en:"I'm doing great, thanks! Ready to tackle the day.",ar:"أنا بخير، شكراً! مستعد لمواجهة اليوم.",note:"'Tackle the day' = face challenges positively"},{s:"A",en:"That's the spirit! Shall we get started?",ar:"هذه هي الروح! هل نبدأ؟",note:"'That's the spirit' = expressing encouragement"}]},
+  ],
+  work:[
+    {title:"In a Business Meeting",scene:"American office environment",lines:[{s:"A",en:"Let's circle back to that point after we cover the budget.",ar:"لنعود لهذه النقطة بعد مناقشة الميزانية.",note:"'Circle back' = return to a topic"},{s:"B",en:"Sure. I want to flag that we're running low on time.",ar:"بالتأكيد. أريد الإشارة إلى أننا نفد من الوقت.",note:"'Flag' = draw attention to"},{s:"A",en:"Good point. Let's take this offline and follow up by email.",ar:"نقطة جيدة. لنناقشها خارج الاجتماع ونتابع بالبريد.",note:"'Take offline' = discuss separately"}]},
+    {title:"Asking for Time Off",scene:"Talking to your American manager",lines:[{s:"You",en:"Hey Sarah, do you have a second?",ar:"مرحباً سارة، هل لديك لحظة؟",note:"Casual and friendly opener"},{s:"Boss",en:"Sure, what's up?",ar:"بالتأكيد، ما الأمر؟"},{s:"You",en:"I was wondering if I could take Friday off. I have a family thing.",ar:"كنت أتساءل إن كان بإمكاني إجازة الجمعة.",note:"'I was wondering if' = polite request"},{s:"Boss",en:"That should be fine. Just make sure your work is covered.",ar:"هذا يبدو جيداً. فقط غطِّ عملك.",note:""}]},
+  ],
+  shopping:[
+    {title:"At a Clothing Store",scene:"American mall or boutique",lines:[{s:"Staff",en:"Hi there! Can I help you find anything today?",ar:"مرحباً! هل يمكنني مساعدتك؟"},{s:"You",en:"I'm just browsing for now, thanks.",ar:"أنا فقط أتصفح الآن، شكراً.",note:"'Browsing' = looking without buying intent"},{s:"You",en:"Actually, do you have this in a medium?",ar:"في الواقع، هل لديكم هذا في مقاس وسط؟"},{s:"Staff",en:"Let me check in the back. One sec!",ar:"دعني أتحقق في المستودع. لحظة!",note:"'One sec' = one second, very informal"}]},
+  ],
+  restaurant:[
+    {title:"Ordering at an American Restaurant",scene:"Casual American diner",lines:[{s:"Server",en:"Hi folks! Can I start you off with some drinks?",ar:"مرحباً يا جماعة! هل أبدأ بالمشروبات؟",note:"'Folks' = informal for everyone"},{s:"You",en:"I'll have a water, and can I get a Coke?",ar:"سآخذ ماء وكوكا كولا.",note:"'Can I get' = very common American way to order"},{s:"Server",en:"Absolutely! Ready to order, or need a few more minutes?",ar:"بالطبع! هل أنتم مستعدون أم تحتاجون دقائق؟"},{s:"You",en:"I'm ready. I'll go with the grilled salmon.",ar:"أنا مستعد. سآخذ السلمون المشوي.",note:"'I'll go with' = casual way to choose"}]},
+  ],
+  small:[
+    {title:"Small Talk About Weather",scene:"Americans love weather talk!",lines:[{s:"A",en:"Can you believe this heat? It's brutal out there!",ar:"هل تصدق هذه الحرارة؟ إنها قاسية!",note:"'Can you believe' = expressing surprise"},{s:"B",en:"I know! I'm so over summer at this point.",ar:"أعلم! لقد مللت من الصيف تماماً.",note:"'I'm so over it' = very tired of it"},{s:"A",en:"Seriously. I'm counting down the days till fall.",ar:"بجد. أنا أعد الأيام حتى يأتي الخريف.",note:"'Counting down' = eagerly waiting"}]},
+    {title:"Meeting Someone at a Party",scene:"Social gathering in America",lines:[{s:"A",en:"So, what do you do?",ar:"إذن، ماذا تعمل؟",note:"Classic American small talk opener"},{s:"B",en:"I'm in tech — I work at a startup downtown.",ar:"أنا في مجال التقنية — أعمل في شركة ناشئة."},{s:"A",en:"Nice! I'm actually in between jobs right now.",ar:"رائع! أنا في الواقع بين وظيفتين حالياً.",note:"'In between jobs' = polite for unemployed"}]},
+  ],
+  emergency:[
+    {title:"Calling 911",scene:"Emergency in the United States",lines:[{s:"911",en:"911, what's your emergency?",ar:"911، ما هي حالتك الطارئة؟"},{s:"You",en:"I need an ambulance! Someone collapsed at 5th and Main.",ar:"أحتاج سيارة إسعاف! شخص سقط عند الشارع الخامس وماين.",note:"Always give your exact location first"},{s:"911",en:"Is the person conscious and breathing?",ar:"هل الشخص واعٍ ويتنفس؟"},{s:"You",en:"He's breathing but unresponsive. Please hurry!",ar:"يتنفس لكنه لا يستجيب. من فضلكم أسرعوا!",note:""}]},
+  ],
+};
+
+const LESSONS=[
+  {t:"Greetings & Introductions",s:"Introduce yourself like an American",tags:["speak","vocab"],xp:50,status:"done",icon:"👋"},
+  {t:"Present Tenses Deep Dive",s:"Master simple & progressive present",tags:["grammar"],xp:75,status:"done",icon:"📝"},
+  {t:"American Pronunciation Basics",s:"The 44 sounds of American English",tags:["speak"],xp:60,status:"done",icon:"🎙️"},
+  {t:"Common Phrasal Verbs Vol.1",s:"30 essential phrasal verbs in context",tags:["vocab","speak"],xp:80,status:"active",icon:"💪"},
+  {t:"Past Tenses & Storytelling",s:"Tell stories naturally in the past",tags:["grammar"],xp:75,status:"locked",icon:"📖"},
+  {t:"American Slang & Expressions",s:"Sound natural with everyday slang",tags:["vocab","speak"],xp:90,status:"locked",icon:"😎"},
+  {t:"Business English Essentials",s:"Professional vocabulary & emails",tags:["business","vocab"],xp:100,status:"locked",icon:"💼"},
+  {t:"Idioms & Fixed Expressions",s:"50 common American idioms",tags:["vocab"],xp:85,status:"locked",icon:"🧩"},
+  {t:"Future Tenses & Plans",s:"Talk about intentions & predictions",tags:["grammar"],xp:70,status:"locked",icon:"🔮"},
+  {t:"The R-Sound & Linking Words",s:"Key to sounding truly American",tags:["speak","listen"],xp:65,status:"locked",icon:"🔤"},
+  {t:"Conditionals in Real Life",s:"All 4 conditionals with real examples",tags:["grammar"],xp:90,status:"locked",icon:"🔀"},
+  {t:"Advanced Conversation Skills",s:"Interrupting, agreeing, debating",tags:["speak"],xp:120,status:"locked",icon:"🎯"},
+];
+
+const ACHIEVEMENTS=[
+  {icon:"🔥",title:"7-Day Streak",desc:"Studied 7 days in a row",earned:true},
+  {icon:"📚",title:"Word Collector",desc:"Learned 200+ vocabulary words",earned:true},
+  {icon:"⚡",title:"Quiz Master",desc:"Scored 100% on a quiz",earned:true},
+  {icon:"🌟",title:"Grammar Guru",desc:"Completed all grammar lessons",earned:false},
+  {icon:"🎙️",title:"Pronunciation Pro",desc:"Practiced all 44 sounds",earned:false},
+  {icon:"💬",title:"Conversation King",desc:"Completed 10 dialogue lessons",earned:false},
+  {icon:"🏆",title:"Intermediate Achiever",desc:"Reach Level 5",earned:false},
+  {icon:"🇺🇸",title:"America Expert",desc:"Complete all culture tips",earned:false},
+];
+
+const CONSONANTS=[{p:"/p/",e:"pen"},{p:"/b/",e:"big"},{p:"/t/",e:"top"},{p:"/d/",e:"dog"},{p:"/k/",e:"cat"},{p:"/g/",e:"go"},{p:"/f/",e:"fun"},{p:"/v/",e:"very"},{p:"/θ/",e:"think"},{p:"/ð/",e:"the"},{p:"/s/",e:"sun"},{p:"/z/",e:"zoo"},{p:"/ʃ/",e:"she"},{p:"/ʒ/",e:"beige"},{p:"/tʃ/",e:"chip"},{p:"/dʒ/",e:"jump"},{p:"/m/",e:"man"},{p:"/n/",e:"now"},{p:"/ŋ/",e:"sing"},{p:"/h/",e:"hot"},{p:"/l/",e:"let"},{p:"/r/",e:"red"},{p:"/w/",e:"win"},{p:"/j/",e:"yes"}];
+const VOWELS=[{p:"/iː/",e:"see"},{p:"/ɪ/",e:"sit"},{p:"/e/",e:"bed"},{p:"/æ/",e:"cat"},{p:"/ɑː/",e:"car"},{p:"/ɔː/",e:"call"},{p:"/ʊ/",e:"book"},{p:"/uː/",e:"food"},{p:"/ʌ/",e:"cup"},{p:"/ɜː/",e:"bird"},{p:"/ə/",e:"about"},{p:"/eɪ/",e:"day"},{p:"/aɪ/",e:"my"},{p:"/ɔɪ/",e:"boy"},{p:"/əʊ/",e:"go"},{p:"/aʊ/",e:"now"}];
+const TIPS=[
+  {icon:"🔤",title:"The American R-Sound",text:"The American 'R' is pronounced with the tongue tip raised toward the roof of the mouth, curling slightly back. This retroflex sound is what makes American English distinctive.",ex:"car /kɑːr/ · bird /bɜːrd/ · water /ˈwɔːtər/"},
+  {icon:"🔁",title:"Flap T — The American Secret",text:"In American English, 'T' between vowels sounds like a quick 'D'. This is why 'butter', 'water', 'better' sound soft — not a crisp British T.",ex:"butter → /ˈbʌɾər/ · water → /ˈwɔːɾər/ · better → /ˈbɛɾər/"},
+  {icon:"🔗",title:"Linking Words Together",text:"Americans link words smoothly. 'Did you' → 'didja', 'want to' → 'wanna', 'going to' → 'gonna'. These are natural, not incorrect!",ex:"\"I'm gonna call you\" · \"Whatcha doing?\" · \"Didja see that?\""},
+  {icon:"⬆️",title:"Intonation — The Music of English",text:"Rising intonation for questions, falling for statements. Getting this right makes you sound dramatically more natural.",ex:"Rising: \"You're coming?↗\" / Falling: \"I'll be there at 8.↘\""},
+  {icon:"💨",title:"Reduced Vowels (Schwa)",text:"The schwa /ə/ is the most common sound in American English — unstressed syllables often reduce to this neutral sound.",ex:"a·bout /əˈbaʊt/ · to·day /təˈdeɪ/ · to·ge·ther /təˈɡɛðər/"},
+];
+
+const WOTD=[
+  {w:"breakthrough",ipa:"/ˈbreɪkθruː/",type:"noun",meaning:"إنجاز كبير / اختراق",ex:"The scientists made a breakthrough in cancer research."},
+  {w:"hustle",ipa:"/ˈhʌsəl/",type:"verb/noun",meaning:"يكدح / يعمل بجد ونشاط",ex:"You gotta hustle if you want to make it."},
+  {w:"FOMO",ipa:"/ˈfoʊmoʊ/",type:"acronym",meaning:"الخوف من تفويت شيء مثير",ex:"I have serious FOMO about that concert."},
+  {w:"go-getter",ipa:"/ˈɡoʊɡɛtər/",type:"noun",meaning:"شخص طموح نشيط",ex:"She's a real go-getter — already got two promotions."},
+  {w:"bandwidth",ipa:"/ˈbændwɪdθ/",type:"noun",meaning:"الطاقة / الوقت / القدرة",ex:"I don't have the bandwidth for another project."},
+  {w:"vibe",ipa:"/vaɪb/",type:"noun/verb",meaning:"الأجواء / الطاقة المحيطة",ex:"This place has such a great vibe!"},
+  {w:"resilient",ipa:"/rɪˈzɪliənt/",type:"adjective",meaning:"قادر على التعافي",ex:"She's incredibly resilient — nothing knocks her down."},
+];
+
+// STATE
+let curVocab=[...VOCAB],vocabIdx=0,learnedSet=new Set(),cardFlipped=false;
+let quizIdx=0,quizScore=0,quizAnswered=false,quizQs=[];
+
+// NAV
+function showPage(p){
+  ['home','vocab','grammar','pronun','quiz','phrases','lessons','progress'].forEach(id=>{
+    const el=document.getElementById('page-'+id);
+    if(el)el.className='page'+(p===id?' on':'');
+  });
+  ['home','vocab','quiz','phrases','progress'].forEach(id=>{
+    const el=document.getElementById('bn-'+id);
+    if(el)el.className='bn';
+  });
+  const map={home:'home',vocab:'vocab',grammar:'vocab',pronun:'vocab',quiz:'quiz',phrases:'phrases',lessons:'home',progress:'progress'};
+  const bnId=map[p]||p;
+  const bnEl=document.getElementById('bn-'+bnId);
+  if(bnEl)bnEl.className='bn on';
+  if(p==='vocab')initVocab();
+  if(p==='grammar')initGrammar();
+  if(p==='pronun')initPronun();
+  if(p==='quiz')startQuiz();
+  if(p==='phrases')initPhrases();
+  if(p==='lessons')renderLessons();
+  if(p==='progress')renderProgress();
+  window.scrollTo(0,0);
+}
+
+// WOTD
+function initWOTD(){
+  const w=WOTD[new Date().getDate()%WOTD.length];
+  document.getElementById('wotd-word').textContent=w.w;
+  document.getElementById('wotd-ipa').textContent=w.ipa;
+  document.getElementById('wotd-type').textContent=w.type;
+  document.getElementById('wotd-meaning').textContent=w.meaning;
+  document.getElementById('wotd-ex').textContent='"'+w.ex+'"';
+}
+
+// VOCAB
+function initVocab(){renderFC();renderWL();}
+
+function filterVocab(cat,btn){
+  document.querySelectorAll('.vf-btn').forEach(b=>b.className='vf-btn');
+  btn.className='vf-btn on';
+  curVocab=cat==='all'?[...VOCAB]:VOCAB.filter(v=>v.cat===cat);
+  vocabIdx=0;cardFlipped=false;
+  document.getElementById('flashcard').classList.remove('flipped');
+  renderFC();renderWL();
+}
+
+function renderFC(){
+  if(!curVocab.length)return;
+  const v=curVocab[vocabIdx%curVocab.length];
+  document.getElementById('fc-type').textContent=v.type;
+  document.getElementById('fc-word').textContent=v.w;
+  document.getElementById('fc-ipa').textContent=v.ipa;
+  document.getElementById('fc-hint').textContent='💡 '+v.hint;
+  document.getElementById('fc-meaning').textContent=v.meaning;
+  document.getElementById('fc-example').textContent='"'+v.ex+'"';
+  document.getElementById('vcCount').textContent='Card '+(vocabIdx%curVocab.length+1)+'/'+curVocab.length;
+  document.getElementById('vcProg').textContent=learnedSet.size+' learned ✓';
+}
+
+function flipCard(){cardFlipped=!cardFlipped;document.getElementById('flashcard').classList.toggle('flipped',cardFlipped);}
+function nextCard(){vocabIdx=(vocabIdx+1)%curVocab.length;cardFlipped=false;document.getElementById('flashcard').classList.remove('flipped');setTimeout(renderFC,10);}
+function skipCard(){nextCard();}
+function knowCard(){const v=curVocab[vocabIdx%curVocab.length];learnedSet.add(v.w);nextCard();}
+
+function renderWL(){
+  document.getElementById('wordList').innerHTML=curVocab.slice(0,12).map(v=>`
+    <div class="wl-item" onclick="speak('${v.w}')">
+      <div class="wl-ico">🔤</div>
+      <div class="wl-info"><div class="wl-word">${v.w}</div><div class="wl-ipa">${v.ipa}</div><div class="wl-meaning">${v.meaning}</div></div>
+      ${learnedSet.has(v.w)?'<span class="wl-badge">✓</span>':''}
+    </div>`).join('');
+}
+
+// GRAMMAR
+let curGTab='tenses';
+function initGrammar(){renderGrammar(curGTab);}
+
+function switchGrammar(tab,btn){
+  document.querySelectorAll('.gt-btn').forEach(b=>b.className='gt-btn');
+  btn.className='gt-btn on';curGTab=tab;renderGrammar(tab);
+}
+
+function renderGrammar(tab){
+  const data=GRAMMAR_DATA[tab];
+  const el=document.getElementById('grammarContent');
+  if(!data||!data.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--txt3)">Coming soon...</div>';return;}
+  el.innerHTML=data.map((r,i)=>`
+    <div class="rule-card" id="rc${i}" onclick="toggleRule(${i})">
+      <div class="rule-head"><div class="rule-title">${r.t}</div><div class="rule-toggle">▾</div></div>
+      <div class="rule-body">
+        ${r.f?`<div class="rule-formula">📐 ${r.f}</div>`:''}
+        <div class="rule-desc">${r.d}</div>
+        <div>${r.ex.map(e=>`<div class="rule-ex"><div class="en">${e.e}</div><div class="ar">${e.a}</div>${e.n?`<div class="notes">📌 ${e.n}</div>`:''}</div>`).join('')}</div>
+      </div>
+    </div>`).join('');
+  setTimeout(()=>{const rc=document.getElementById('rc0');if(rc)rc.classList.add('open');},50);
+}
+
+function toggleRule(i){const rc=document.getElementById('rc'+i);if(rc)rc.classList.toggle('open');}
+
+// PRONUNCIATION
+function initPronun(){
+  document.getElementById('consonantGrid').innerHTML=CONSONANTS.map(c=>`<div class="sc" onclick="speak('${c.e}')"><div class="sc-ipa">${c.p}</div><div class="sc-ex">${c.e}</div></div>`).join('');
+  document.getElementById('vowelGrid').innerHTML=VOWELS.map(c=>`<div class="sc vowel" onclick="speak('${c.e}')"><div class="sc-ipa">${c.p}</div><div class="sc-ex">${c.e}</div></div>`).join('');
+  document.getElementById('pronunTips').innerHTML=TIPS.map(t=>`<div class="tip-card"><div class="tip-icon">${t.icon}</div><div><div class="tip-title">${t.title}</div><div class="tip-text">${t.text}</div><div class="tip-example">${t.ex}</div></div></div>`).join('');
+}
+
+// QUIZ
+function startQuiz(){
+  quizIdx=0;quizScore=0;quizAnswered=false;
+  quizQs=[...QUIZ_Q].sort(()=>Math.random()-.5).slice(0,10);
+  document.getElementById('quizContent').style.display='block';
+  document.getElementById('quizFinish').className='quiz-finish';
+  renderQ();
+}
+
+function renderQ(){
+  const q=quizQs[quizIdx];
+  if(!q){showResults();return;}
+  document.getElementById('qProgFill').style.width=(quizIdx/quizQs.length*100)+'%';
+  document.getElementById('qMeta').textContent='Q '+(quizIdx+1)+'/'+quizQs.length;
+  document.getElementById('qScore').textContent='Score: '+quizScore;
+  const lbl={vocab:'🧠 Vocabulary',grammar:'📐 Grammar',idiom:'🧩 Idiom',phrasal:'🔄 Phrasal Verb'};
+  document.getElementById('qTypeBadge').textContent=lbl[q.type]||'⚡ Quiz';
+  document.getElementById('quizQ').textContent=q.q;
+  document.getElementById('quizQSub').textContent=q.sub||'';
+  const L=['A','B','C','D'];
+  document.getElementById('quizOpts').innerHTML=q.opts.map((o,i)=>`<button class="q-opt" onclick="answerQ(${i})"><span class="opt-ltr">${L[i]}</span>${o}</button>`).join('');
+  document.getElementById('quizFb').className='q-fb';
+  document.getElementById('qNextBtn').className='q-next-btn';
+  quizAnswered=false;
+}
+
+function answerQ(idx){
+  if(quizAnswered)return;quizAnswered=true;
+  const q=quizQs[quizIdx];
+  const opts=document.querySelectorAll('.q-opt');
+  opts.forEach(o=>o.classList.add('answered'));
+  opts[q.ans].classList.add('correct');
+  if(idx!==q.ans)opts[idx].classList.add('wrong');
+  else quizScore++;
+  const ok=idx===q.ans;
+  const fb=document.getElementById('quizFb');
+  fb.className='q-fb show'+(ok?'':' wrong-fb');
+  const t=document.getElementById('qfTitle');
+  t.className='qf-title '+(ok?'ok':'no');
+  t.textContent=ok?'✓ Correct!':'✗ Not quite!';
+  document.getElementById('qfText').innerHTML=q.explain;
+  document.getElementById('qNextBtn').className='q-next-btn show';
+  document.getElementById('qScore').textContent='Score: '+quizScore;
+}
+
+function nextQuestion(){quizIdx++;if(quizIdx>=quizQs.length){showResults();return;}renderQ();}
+
+function showResults(){
+  document.getElementById('quizContent').style.display='none';
+  document.getElementById('quizFinish').className='quiz-finish show';
+  const pct=Math.round(quizScore/quizQs.length*100);
+  const e=pct>=90?'🏆':pct>=70?'🎉':pct>=50?'💪':'📚';
+  const s=pct>=90?"Outstanding! You're acing American English!":pct>=70?"Great job! Keep pushing!":pct>=50?"Good effort! Review and retry.":"Keep studying — you've got this!";
+  document.getElementById('qfEmoji').textContent=e;
+  document.getElementById('qfScore').textContent=quizScore+'/'+quizQs.length+' — '+pct+'%';
+  document.getElementById('qfSub').textContent=s;
+  document.getElementById('qProgFill').style.width='100%';
+}
+
+// PHRASES
+let curPhraseCat='greetings';
+function initPhrases(){renderPhrases(curPhraseCat);}
+
+function switchPhrases(cat,btn){
+  document.querySelectorAll('.pc-btn').forEach(b=>b.className='pc-btn');
+  btn.className='pc-btn on';curPhraseCat=cat;renderPhrases(cat);
+}
+
+function renderPhrases(cat){
+  const data=PHRASES_DATA[cat]||[];
+  document.getElementById('phrasesContent').innerHTML=data.map(d=>`
+    <div class="dlg-card">
+      <div class="dlg-title">💬 ${d.title}</div>
+      <div class="dlg-scene">📍 ${d.scene}</div>
+      <div>${d.lines.map(l=>`<div class="dl-line">
+        <div class="dl-s">${l.s}:</div>
+        <div class="dl-bub ${['B','Boss','Staff','Server','911','Cashier','Operator'].includes(l.s)?'b':''}">
+          <div class="dl-en">${l.en} <button class="speak-btn" style="padding:2px 8px;font-size:.62rem" onclick="speak(this.closest('.dl-bub').querySelector('.dl-en').firstChild.textContent.trim())">🔊</button></div>
+          <div class="dl-ar">${l.ar}</div>
+          ${l.note?`<div class="dl-note">💡 ${l.note}</div>`:''}
+        </div></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// LESSONS
+function renderLessons(){
+  document.getElementById('lessonPath').innerHTML=LESSONS.map((l,i)=>`
+    <div class="lesson-item">
+      <div class="lesson-bubble ${l.status}">${l.status==='done'?'✓':l.status==='active'?l.icon:'🔒'}</div>
+      <div style="flex:1"><div class="li-title">${l.t}</div><div class="li-sub">${l.s}</div><div class="li-tags">${l.tags.map(t=>`<span class="li-tag ${t}">${t}</span>`).join('')}</div></div>
+      <div class="lesson-xp">${l.status==='locked'?'🔒':'+'+l.xp+' XP'}</div>
+    </div>`).join('');
+}
+
+// PROGRESS
+function renderProgress(){
+  document.getElementById('achievements').innerHTML=ACHIEVEMENTS.map(a=>`
+    <div class="ach-item ${a.earned?'earned':''}">
+      <div class="ach-badge">${a.icon}</div>
+      <div class="ach-info"><div class="ach-title">${a.title}</div><div class="ach-desc">${a.desc}</div></div>
+      <div class="ach-status">${a.earned?'✓ Earned':'Locked'}</div>
+    </div>`).join('');
+}
+
+// TTS
+function speak(text){
+  if(!text||text==='—')return;
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text.trim());
+    u.lang='en-US';u.rate=0.9;u.pitch=1;
+    const voices=window.speechSynthesis.getVoices();
+    const v=voices.find(v=>v.lang==='en-US'&&v.name.includes('Google'))||voices.find(v=>v.lang==='en-US')||null;
+    if(v)u.voice=v;
+    window.speechSynthesis.speak(u);
+  }
+}
+
+// PWA
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('installBanner').classList.add('show');
+});
+document.getElementById('installBtn').addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  document.getElementById('installBanner').classList.remove('show');
+  deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;
+});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+if('speechSynthesis' in window)window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+
+// INIT
+initWOTD();
+initGrammar();
+initPhrases();
+</script>
+</body>
+</html>
